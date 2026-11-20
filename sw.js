@@ -1,4 +1,4 @@
-const C='atlasvivo-v7';
+const C='atlasvivo-v8';
 const CORE=['./','index.html','meta.json','geo.json','cities.json','flags.json','hist.json','water.json','topo.png','night.jpg','sat.jpg','icon.svg','manifest.webmanifest'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
