@@ -334,6 +334,14 @@ body.pres .ptitle{display:block}.ptitle.on{opacity:1;transform:none}
 body.pres .top,body.pres .rail,body.pres .insp,body.pres .stat,body.pres .mc,body.pres .tl,body.pres .scn,body.pres .tip,body.pres .addm{opacity:0!important;pointer-events:none!important}
 body.pres .legend{bottom:22px;left:24px}body.pres .lg .x{display:none}
 
+
+body:not(.story) #secEv{display:none}
+.itabs{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:8px 10px;background:var(--ui);border-bottom:1px solid var(--line)}
+.itabs button{height:30px;border:0;border-radius:7px;background:none;color:var(--mute);font:600 12px Inter;cursor:pointer}.itabs button:hover{color:var(--ink);background:var(--ui2)}.itabs button[aria-pressed=true]{background:var(--accbg);color:var(--ink)}
+.insp [data-tab]{display:none}.insp[data-t=map] [data-tab=map],.insp[data-t=draw] [data-tab=draw],.insp[data-t=sel] [data-tab=sel],.insp[data-t=set] [data-tab=set]{display:block}
+.cfh{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--mute);margin:4px 0 6px;line-height:1.35}.cfh span{flex:1}
+.cfr a{font-size:11px;color:var(--acc);text-decoration:none;margin-top:2px}.cfr a:hover{text-decoration:underline}div.cfr{cursor:pointer}
+.attr{position:fixed;right:calc(var(--insp,0px) + 12px);bottom:calc(var(--stat,24px) + var(--tl,0px) + 6px);z-index:8;font:500 10.5px Inter;color:#fff;background:rgba(0,0,0,.5);padding:2px 7px;border-radius:4px;pointer-events:none}.attr[hidden]{display:none}
 .mtypes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.mtypes button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px 6px;border:1px solid var(--line);background:var(--ui2);color:var(--mute);border-radius:8px;cursor:pointer;font:500 10.5px/1.15 Inter;text-align:center}
 .mtypes button:hover{color:var(--ink)}.mtypes button[aria-pressed=true]{border-color:var(--acc);background:var(--accbg);color:var(--ink)}.mtypes svg{color:var(--ink)}
 .lays{display:grid;gap:2px;margin-top:10px}.lays .row{margin-top:4px}
@@ -423,9 +431,10 @@ body.pres .ecoleg{left:24px;top:auto;bottom:80px}
   <div class="swatch" id="swMain" title="Cor ativa"></div>
 </nav>
 
-<aside class="insp" id="insp" aria-label="Propriedades">
+<aside class="insp" id="insp" aria-label="Propriedades" data-t="map">
+  <div class="itabs" id="itabs"><button data-it="map" aria-pressed="true">Mapa</button><button data-it="draw" aria-pressed="false">Anotar</button><button data-it="sel" aria-pressed="false">Seleção</button><button data-it="set" aria-pressed="false">Ajustes</button></div>
   <section class="sec" id="secEv"><div id="ed"><div class="edh"><b id="edT"></b><button class="ib" id="edUp" data-tip="Antes" aria-label="Mover para antes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="ib" id="edDown" aria-label="Mover para depois"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button><button class="ib" id="edDel" aria-label="Apagar evento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 13h8l1-13"/></svg></button><button class="ib" id="edX" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></button></div><div id="edBody"></div><p class="warn" id="edWarn"></p><div class="edacts"><button class="btn play" id="edPrev"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M7 5v14l11-7z" fill="currentColor"/></svg>Prévia</button><button class="btn" id="edFrom">▶ Daqui</button><button class="btn" id="edDup">Duplicar</button></div></div><p class="empty" id="edEmpty">Selecione um evento na linha do tempo, ou crie um com “+ Evento”.</p></section>
-  <details class="sec" id="mapSec" open><summary><h3>Tipo de mapa</h3></summary>
+  <details class="sec" id="mapSec" data-tab="map" open><summary><h3>Tipo de mapa</h3></summary>
     <div class="mtypes" id="mapTypes"></div>
     <div class="lays">
       <label class="tg">Ferrovias<input type="checkbox" id="tgRail"></label>
@@ -436,34 +445,34 @@ body.pres .ecoleg{left:24px;top:auto;bottom:80px}
     </div>
     <div id="confList" class="cfl" hidden></div>
   </details>
-  <section class="sec"><h3>Seleção <button class="mini" id="selClear">Limpar</button></h3><div id="selBox"></div></section>
-  <details class="sec" id="annSec" open><summary><h3>Anotações</h3></summary>
+  <section class="sec" data-tab="sel"><h3>Seleção <button class="mini" id="selClear">Limpar</button></h3><div id="selBox"></div></section>
+  <details class="sec" id="annSec" data-tab="draw" open><summary><h3>Anotações</h3></summary>
     <p class="help" style="margin-top:0">Na barra da esquerda: <b>Seta (A)</b>, <b>Texto (T)</b>, <b>Raio (R)</b>, <b>Régua (M)</b>, <b>Míssil (X)</b> e <b>Ícone (I)</b>.</p>
     <div class="row"><small>Cor</small><div class="sw mini" id="annCols"></div></div>
     <div class="row col"><small>Ícone</small><div class="icg" id="annIcons"></div></div>
     <div class="row"><small>Tamanho</small><input type="range" id="annSize" min=".6" max="2" step=".1" value="1"></div>
     <div class="row"><small>Míssil</small><select id="missType" class="txt"><option value="icbm">Intercontinental (ICBM)</option><option value="mrbm">Balístico de médio alcance</option><option value="hyper">Hipersônico</option><option value="cruise">Cruzeiro</option><option value="drone">Drone kamikaze</option></select></div>
+    <div class="row"><small>Quantidade</small><select id="missN" class="txt"><option value="1">1 míssil</option><option value="3">Salva de 3</option><option value="6">Salva de 6</option><option value="12">Ataque em massa (12)</option></select></div>
+    <label class="tg">Câmera acompanha o lançamento<input type="checkbox" id="missCam" checked></label>
     <div id="annList" class="anl"></div><div class="rowb" style="margin-top:6px"><button class="mini" id="fireAll">▶ Lançar mísseis</button><button class="mini" id="annClear">Apagar todas</button></div>
   </details>
-  <details class="sec" id="blocSec" open><summary><h3>Blocos e alianças</h3></summary>
+  <details class="sec" id="blocSec" data-tab="map" open><summary><h3>Blocos e alianças</h3></summary>
     <div class="blocs" id="blocs"></div>
     <p class="help">Clique para destacar os membros; clique de novo para tirar. Dá para combinar, por exemplo OTAN e OTSC. Membros conforme 2026.</p>
   </details>
-  <details class="sec"><summary><h3>Mais opções</h3></summary><div class="more">
-  <section class="sec"><h3>Nações</h3><div class="rowb"><input class="txt" id="natName" placeholder="Nome da nação"><input type="color" id="natCol" value="#c25dd4" class="natc" aria-label="Cor"><button class="mini" id="natNew">Criar</button></div>
+  <section class="sec" data-tab="sel"><h3>Nações</h3><div class="rowb"><input class="txt" id="natName" placeholder="Nome da nação"><input type="color" id="natCol" value="#c25dd4" class="natc" aria-label="Cor"><button class="mini" id="natNew">Criar</button></div>
     <div class="natl" id="natList"></div>
     <p class="help">Com uma nação ativa, o Pincel e o Balde mudam o <b>dono</b> do território. <button class="lnk" id="natOff">Desativar</button></p>
     <div class="rowb" style="margin-top:6px"><button class="mini" id="blankMap">Mapa em branco (mundo fictício)</button></div></section>
-  <section class="sec"><h3>Época</h3><div class="eras" id="eras"></div><p class="help" id="eraNote">Troque o mapa inteiro por fronteiras históricas. As histórias começam da época escolhida.</p></section>
-  <section class="sec"><h3>Alianças</h3><div class="rowb"><input class="txt" id="allyName" placeholder="Nome (ex.: Eixo)"><button class="mini" id="allyNew">Criar com a seleção</button></div><p class="help">Os membros ganham a mesma cor e aparecem na legenda do mapa.</p></section>
-  </div></details>
-  <section class="sec"><h3>Cor</h3>
+  <section class="sec" data-tab="map"><h3>Época histórica</h3><div class="eras" id="eras"></div><p class="help" id="eraNote">Troque o mapa inteiro por fronteiras históricas. As histórias começam da época escolhida.</p></section>
+  <section class="sec" data-tab="sel"><h3>Alianças</h3><div class="rowb"><input class="txt" id="allyName" placeholder="Nome (ex.: Eixo)"><button class="mini" id="allyNew">Criar com a seleção</button></div><p class="help">Os membros ganham a mesma cor e aparecem na legenda do mapa.</p></section>
+  <section class="sec" data-tab="draw"><h3>Cor</h3>
     <div class="cur"><input type="color" id="colIn" value="#d4574b" aria-label="Cor ativa"><code id="colHex">#D4574B</code><span style="margin-left:auto" class="rowb"><button class="btn pri" id="paintBtn">Pintar seleção</button></span></div>
     <div class="pal" id="pal"></div>
     <div class="rowb"><button class="mini" id="unpaintBtn">Remover cor da seleção</button><button class="mini" id="clearAllBtn">Apagar todas as cores</button></div>
   </section>
-  <section class="sec"><h3>Selecionar por</h3><div class="seg"><button id="lC" aria-pressed="true">Países</button><button id="lS" aria-pressed="false">Estados</button></div></section>
-  <section class="sec"><h3>Estilo do mapa</h3><div class="styles" id="styles"></div>
+  <section class="sec" data-tab="sel"><h3>Selecionar por</h3><div class="seg"><button id="lC" aria-pressed="true">Países</button><button id="lS" aria-pressed="false">Estados</button></div></section>
+  <section class="sec" data-tab="set"><h3>Estilo visual</h3><div class="styles" id="styles"></div>
     <div style="margin-top:10px">
       <label class="tg">Nomes dos países<input type="checkbox" id="tgLab" checked></label>
       <label class="tg">Cidades<input type="checkbox" id="tgCity" checked></label>
@@ -473,6 +482,7 @@ body.pres .ecoleg{left:24px;top:auto;bottom:80px}
       <label class="tg">Rios e lagos<input type="checkbox" id="tgWater" checked></label>
       <label class="tg">Nomes alinhados ao país<input type="checkbox" id="tgAlign" checked></label>
       <label class="tg" hidden>Dia e noite<input type="checkbox" id="tgDN"></label>
+      <label class="tg">Relevo nítido ao aproximar (HD)<input type="checkbox" id="tgHD" checked></label>
       <label class="tg">Modo leve (computador mais fraco)<input type="checkbox" id="tgLite"></label>
       <label class="tg">Escurecer o resto ao selecionar<input type="checkbox" id="tgFoc"></label>
       <label class="tg">Foco nos países do evento<input type="checkbox" id="tgFocEv" checked></label>
@@ -517,6 +527,7 @@ body.pres .ecoleg{left:24px;top:auto;bottom:80px}
 <datalist id="tkinds"><option>Tratado</option><option>Acordo</option><option>Cessar-fogo</option><option>Armistício</option><option>Tratado de paz</option><option>Pacto</option></datalist>
 <input id="annTxt" class="anntxt" hidden placeholder="Texto…">
 <div class="ecoleg" id="ecoLeg" hidden></div>
+<div class="attr" id="attr" hidden></div>
 <div class="tour" id="tour"><div class="tsp" id="tourSp"></div><div class="tcard" id="tourCard"><small id="tourN"></small><b id="tourT"></b><p id="tourB"></p><div class="tbt"><button class="mini" id="tourX">Pular</button><span></span><button class="mini" id="tourPrev">Voltar</button><button class="btn pri" id="tourNext">Próximo</button></div></div></div>
 <div class="hm" id="hm"><div class="hmb"><div class="hmh"><b>Momentos históricos</b><button class="x" id="hmX" aria-label="Fechar">×</button></div><p class="help">Aulas prontas, com mapas da época, alianças, setas e legendas. Depois de abrir, dá para editar, apagar ou acrescentar cenas.</p><div class="hml" id="hmList"></div></div></div>
 <div class="hypo" id="hypo">CENÁRIO HIPOTÉTICO</div>
@@ -601,7 +612,7 @@ const TH=STY;let theme='night';
 /* ---------- renderer ---------- */
 const stage=$('stage');
 let renderer;
-try{renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'})}catch(e){$('load').querySelector('div').textContent='Seu navegador não conseguiu abrir o WebGL.';throw e}
+try{renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'})}catch(e){$('load').querySelector('div').textContent='Seu navegador não conseguiu abrir o WebGL.';throw e}
 let DPR=Math.min(devicePixelRatio,1.5);
 renderer.setPixelRatio(DPR);renderer.setSize(innerWidth,innerHeight);
 stage.appendChild(renderer.domElement);
@@ -613,7 +624,7 @@ controls.enableDamping=true;controls.dampingFactor=.075;controls.enablePan=false
 controls.minDistance=1.16;controls.maxDistance=9;controls.zoomSpeed=.9;
 controls.autoRotate=!reduce;controls.autoRotateSpeed=.35;
 
-const composer=new EffectComposer(renderer);
+const composer=new EffectComposer(renderer);composer.renderTarget1.samples=composer.renderTarget2.samples=((navigator.hardwareConcurrency||8)<=4||innerWidth<700)?0:4;
 composer.addPass(new RenderPass(scene,camera));
 const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),TH.night.bloom,.6,.9);
 composer.addPass(bloom);composer.addPass(new OutputPass());
@@ -740,15 +751,15 @@ Promise.all([fetch('meta.json').then(r=>r.json()),fetchProg('geo.json').then(j=>
   lg.setAttribute('position',new THREE.BufferAttribute(deq(A('fillPos')),2));
   lg.setAttribute('rid',new THREE.BufferAttribute(A('fillRid'),1));
   lg.setIndex(new THREE.BufferAttribute(idx,1));lg.boundingSphere=BS;
-  landU={...U,uConf:{value:0},uFoc:{value:focusTex},uFocK:{value:0},uDef:{value:defTex},uPolit:{value:0},uTex:{value:1},uOrigV:{value:Array.from({length:6},()=>new THREE.Vector3(0,0,1))},uNO:{value:0},uProg:{value:0},uMaxD:{value:1},uAtk:{value:new THREE.Vector3(1,0,0)},uFront:{value:col('#ffb064')},uFrontK:{value:0},uInward:{value:0},uLand:{value:col(TH.night.land)},uGlow:{value:col(TH.night.glow)},uRim:{value:col(TH.night.rim)},uShade:{value:1},uSelFill:{value:TH.night.selFill}};
-  land=new THREE.Mesh(lg,new THREE.ShaderMaterial({uniforms:landU,
+  landU={...U,uTileK:{value:0},uConf:{value:0},uFoc:{value:focusTex},uFocK:{value:0},uDef:{value:defTex},uPolit:{value:0},uTex:{value:1},uOrigV:{value:Array.from({length:6},()=>new THREE.Vector3(0,0,1))},uNO:{value:0},uProg:{value:0},uMaxD:{value:1},uAtk:{value:new THREE.Vector3(1,0,0)},uFront:{value:col('#ffb064')},uFrontK:{value:0},uInward:{value:0},uLand:{value:col(TH.night.land)},uGlow:{value:col(TH.night.glow)},uRim:{value:col(TH.night.rim)},uShade:{value:1},uSelFill:{value:TH.night.selFill}};
+  land=new THREE.Mesh(lg,new THREE.ShaderMaterial({uniforms:landU,transparent:true,
    vertexShader:COMMON+`attribute float rid;varying vec2 vLL;varying float vRid;varying vec3 vN;varying vec3 vW;varying vec3 vS;
    void main(){vLL=position.xy;vRid=rid;vec4 S=reg(uState,rid);float r=1.0016+0.0042*S.r;
     vec3 p=proj(position.xy,r);vN=nrm(position.xy);vS=sph(position.xy,1.0);vec4 w=modelMatrix*vec4(p,1.0);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`,
-   fragmentShader:COMMON+NOISE+GRID+`uniform float uConf;uniform sampler2D uFoc;uniform float uFocK;uniform sampler2D uDef;uniform float uPolit;uniform float uTex;uniform vec3 uOrigV[6];uniform int uNO;uniform float uProg;uniform float uMaxD;uniform vec3 uAtk;uniform vec3 uFront;uniform float uFrontK;uniform float uInward;uniform vec3 uLand;uniform vec3 uGlow;uniform vec3 uRim;uniform float uShade;uniform float uSelFill;
+   fragmentShader:COMMON+NOISE+GRID+`uniform float uTileK;uniform float uConf;uniform sampler2D uFoc;uniform float uFocK;uniform sampler2D uDef;uniform float uPolit;uniform float uTex;uniform vec3 uOrigV[6];uniform int uNO;uniform float uProg;uniform float uMaxD;uniform vec3 uAtk;uniform vec3 uFront;uniform float uFrontK;uniform float uInward;uniform vec3 uLand;uniform vec3 uGlow;uniform vec3 uRim;uniform float uShade;uniform float uSelFill;
    varying vec2 vLL;varying float vRid;varying vec3 vN;varying vec3 vW;varying vec3 vS;
    void main(){vec4 S=reg(uState,vRid);vec4 Pc=reg(uPaint,vRid);
-    float nz=fbm(vS*7.0);float tx=mix(1.0,0.8+0.42*nz,uTex);
+    float nz=uTex>0.001?fbm(vS*7.0):0.5;float tx=mix(1.0,0.8+0.42*nz,uTex);
     vec3 base=mix(uLand*tx,lin(reg(uDef,vRid).rgb)*mix(1.0,0.9+0.18*nz,uTex),uPolit);
     if(uSat>0.001)base=mix(base,pow(texture2D(uSatTex,llUV(vLL)).rgb,vec3(2.2))*1.15,uSat);
     if(uHyp>0.001){float hh=texture2D(uTopo,llUV(vLL)).r;vec3 hc=mix(vec3(0.20,0.40,0.20),vec3(0.55,0.62,0.33),smoothstep(0.0,0.14,hh));hc=mix(hc,vec3(0.80,0.72,0.47),smoothstep(0.12,0.32,hh));hc=mix(hc,vec3(0.58,0.42,0.28),smoothstep(0.30,0.55,hh));hc=mix(hc,vec3(0.50,0.44,0.40),smoothstep(0.55,0.75,hh));hc=mix(hc,vec3(0.96,0.96,0.97),smoothstep(0.78,0.95,hh));base=mix(base,pow(hc,vec3(2.2)),uHyp);}
@@ -775,7 +786,8 @@ Promise.all([fetch('meta.json').then(r=>r.json()),fetchProg('geo.json').then(j=>
     c=mix(c,mix(c,uGlow,0.2),S.r*uSelFill*(uFocK>0.01?0.35:1.0))+uGlow*S.r*0.025*pulse*uShade;
     c=mix(c,mix(c,uGlow,0.16),S.g);
     c+=uFront*band*2.4;
-    gl_FragColor=vec4(c,1.0);}`}));
+    float la=1.0;if(uTileK>0.001){vec4 F2=reg(uFoc,vRid);la=mix(1.0,clamp(Pc.a*0.82+S.r*uSelFill*0.7+S.g*0.22+uFocK*(1.0-F2.r)*0.78+uConf*F2.g*0.5+band,0.0,1.0),uTileK);}
+    gl_FragColor=vec4(c,la);}`}));
   land.frustumCulled=false;land.renderOrder=1;scene.add(land);
 
   // borders
@@ -864,7 +876,7 @@ function pick(x,y){
 
 /* ---------- selection / hover / paint ---------- */
 function dist(r,o){return Math.acos(Math.min(1,Math.sin(r.lat)*Math.sin(o.lat)+Math.cos(r.lat)*Math.cos(o.lat)*Math.cos(r.lon-o.lon)))}
-function selectIds(ids,on,origin){kick(30);
+function selectIds(ids,on,origin){kick(30);if(on&&ids&&ids.length&&interacted&&!RUN.on&&!PRES.on&&(tool==='select'||tool==='lasso'))setTimeout(()=>setITab('sel'));
   const now=performance.now()/1000;
   for(const id of ids){if(selT[id]===on)continue;selT[id]=on;selD[id]=now+(origin&&!reduce?Math.min(.55,dist(regions[id-1],origin)*.9):0);anim.add(id)}
   selN=selected().length;updateCard();refocus();
@@ -1047,7 +1059,7 @@ const CURX={missile:'crosshair',ring:'crosshair',ruler:'crosshair',arrow:'crossh
 const CUR={hand:'grab',select:'default',lasso:'crosshair',brush:'crosshair',fill:'cell',erase:'crosshair'};
 function setTool(t){tool=t;for(const b of document.querySelectorAll('[data-tool]'))b.setAttribute('aria-pressed',b.dataset.tool===t);
   const free=t==='hand'||t==='select'||t==='fill'||t==='text'||t==='icon';controls.enableRotate=free&&view==='globe';controls.enablePan=free&&view==='flat';
-  cv.style.cursor=CUR[t]||CURX[t];$('stHint').textContent=HINT[t]||HINTX[t];if(HINTX[t]){$('annSec').open=true;$('annSec').scrollIntoView({block:'nearest'})}}
+  cv.style.cursor=CUR[t]||CURX[t];$('stHint').textContent=HINT[t]||HINTX[t];if(HINTX[t]){setITab('draw');$('annSec').open=true}}
 for(const b of document.querySelectorAll('[data-tool]'))b.onclick=()=>setTool(b.dataset.tool);
 function stopAuto(){if(!interacted){interacted=true;controls.autoRotate=false}}
 cv.addEventListener('pointerdown',e=>{
@@ -1067,7 +1079,7 @@ cv.addEventListener('pointermove',e=>{
 cv.addEventListener('pointerleave',()=>{mouse=null;setHover([]);tip.style.opacity=0});
 cv.addEventListener('pointerup',e=>{
   if(lassoPts){finishLasso();lassoPts=null;$('lassoP').setAttribute('d','');return}
-  if(FX.annDrag){const d=FX.annDrag;FX.annDrag=null;if(d.b&&dist(d.a,d.b)>.004){const o={k:d.k,a:d.a,b:d.b,c:annCol,s:annSize};if(d.k==='missile'){o.mt=missType;o.t0=performance.now()}if(d.k==='ring')o.km=Math.round(dist(d.a,d.b)*6371/50)*50||50;ANN.push(o);renderAnnList()}kick(5);down=null;return}
+  if(FX.annDrag){const d=FX.annDrag;FX.annDrag=null;if(d.b&&dist(d.a,d.b)>.004){const o={k:d.k,a:d.a,b:d.b,c:annCol,s:annSize};if(d.k==='missile'){o.mt=missType;o.t0=performance.now()+(($('missCam').checked&&view==='globe')?900:0)}if(d.k==='ring')o.km=Math.round(dist(d.a,d.b)*6371/50)*50||50;ANN.push(o);if(d.k==='missile')misSalvo(o);renderAnnList()}kick(5);down=null;return}
   if(painting){painting=null;if(activeNation!=null&&tool==='brush')ownDone();return}
   if(!down)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y),dt=performance.now()-down.t;down=null;
   if(moved>6||dt>500||e.button!==0)return;
@@ -2289,22 +2301,46 @@ function misPts(a,n){const A=unit(a.a.lon,a.a.lat),B=unit(a.b.lon,a.b.lat),w=A.a
     const pp=P(q.lon,q.lat,1.004+hh).project(camera),f=Nrm(q.lon,q.lat).dot(camera.position.clone().sub(P(q.lon,q.lat,1.004+hh)).normalize());out.push({x:(pp.x+1)/2*innerWidth,y:(1-pp.y)/2*innerHeight,v:f>-(hh*1.6+.03)&&pp.z<1})}return out}
 const pd=pts=>{let d='',pen=false;for(const q of pts){if(!q.v){pen=false;continue}d+=(pen?'L':'M')+q.x.toFixed(1)+','+q.y.toFixed(1);pen=true}return d};
 let misBusy=false;
-function missileHTML(a,z){const now=performance.now(),D=misDur(a),t=a.t0?(now-a.t0)/D:1.4,pts=misPts(a,72),c=a.c||'#ff3b30';
-  const km=dist(a.a,a.b)*6371,M=MT[a.mt||'icbm'];let h=`<path d="${pd(pts)}" fill="none" stroke="${c}" stroke-opacity="${t>=1?.7:.35}" stroke-width="${(2*z).toFixed(1)}" stroke-dasharray="${(5*z).toFixed(1)} ${(5*z).toFixed(1)}"/>`;
-  if(t<1.4)misBusy=true;
-  if(t>0&&t<1){const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,k=Math.max(1,Math.round(e*72)),tr=pts.slice(Math.max(0,k-18),k+1),full=pts.slice(0,k+1),hd=pts[k];h+=`<path d="${pd(full)}" fill="none" stroke="${c}" stroke-opacity=".75" stroke-width="${(2.2*z).toFixed(1)}"/>`;
-    h+=`<path d="${pd(tr)}" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="${(5*z).toFixed(1)}" stroke-linecap="round"/><path d="${pd(tr)}" fill="none" stroke="${c}" stroke-width="${(2.6*z).toFixed(1)}" stroke-linecap="round"/>`;
-    if(hd&&hd.v)h+=`<circle cx="${hd.x.toFixed(1)}" cy="${hd.y.toFixed(1)}" r="${(9*z).toFixed(1)}" fill="${c}" opacity=".35"/><circle cx="${hd.x.toFixed(1)}" cy="${hd.y.toFixed(1)}" r="${(3.6*z).toFixed(1)}" fill="#fff"/>`}
-  const end=pts[72],s0=pts[0];
-  if(t>=1&&end.v){const it=(t-1)*D/1000;if(it<1.6){const r=(6+it*34)*z,o=Math.max(0,1-it/1.6);h+=`<circle cx="${end.x.toFixed(1)}" cy="${end.y.toFixed(1)}" r="${r.toFixed(1)}" fill="none" stroke="#ffd34d" stroke-width="${(3*z).toFixed(1)}" opacity="${o.toFixed(2)}"/><circle cx="${end.x.toFixed(1)}" cy="${end.y.toFixed(1)}" r="${(r*.55).toFixed(1)}" fill="#ff7a1a" opacity="${(o*.7).toFixed(2)}"/>`}
-    h+=`<circle cx="${end.x.toFixed(1)}" cy="${end.y.toFixed(1)}" r="${(6*z).toFixed(1)}" fill="${c}" stroke="#000" stroke-width="1.5"/><path d="M${(end.x-3.4*z).toFixed(1)},${(end.y-3.4*z).toFixed(1)}l${(6.8*z).toFixed(1)},${(6.8*z).toFixed(1)}M${(end.x+3.4*z).toFixed(1)},${(end.y-3.4*z).toFixed(1)}l${(-6.8*z).toFixed(1)},${(6.8*z).toFixed(1)}" stroke="#fff" stroke-width="${(1.8*z).toFixed(1)}"/>`}
-  if(s0.v)h+=`<circle cx="${s0.x.toFixed(1)}" cy="${s0.y.toFixed(1)}" r="${(4.5*z).toFixed(1)}" fill="#fff" stroke="${c}" stroke-width="2.5"/>`;
-  const mid=pts[36];if(mid.v)h+=`<text x="${mid.x.toFixed(1)}" y="${(mid.y-10*z).toFixed(1)}" text-anchor="middle" font-family="Barlow Condensed,Inter,sans-serif" font-weight="700" font-size="${(14.5*z).toFixed(1)}" fill="#fff" stroke="#000" stroke-width="${(3.4*z).toFixed(1)}" stroke-linejoin="round" paint-order="stroke">${a.t?esc(a.t.toUpperCase())+' · ':''}${M[1].toUpperCase()} · ${fmtKm(km)} · ${fmtDur(km/M[2])}</text>`;
+function misH(a){const A=unit(a.a.lon,a.a.lat),B=unit(a.b.lon,a.b.lat),w=A.angleTo(B);return{A,B,w,H:Math.min(.75,w*MT[a.mt||'icbm'][3])+.003}}
+function missileHTML(a,z){const M=MT[a.mt||'icbm'],km=dist(a.a,a.b)*6371,{A,B,H}=misH(a);let h='';
+  if(a.pv){const pts=misPts(a,40);h+=`<path d="${pd(pts)}" fill="none" stroke="${a.c}" stroke-width="2" stroke-dasharray="6 5"/>`}
+  const t=a.t0?(performance.now()-a.t0)/misDur(a):2;if(t<0||a.sv)return h;
+  const q=ll(slerpU(A,B,.5)),ap=P(q.lon,q.lat,1.004+H),pp=ap.clone().project(camera),f=Nrm(q.lon,q.lat).dot(camera.position.clone().sub(ap).normalize());
+  if(pp.z<1&&f>-(H*1.6+.03)){const x=(pp.x+1)/2*innerWidth,y=(1-pp.y)/2*innerHeight;h+=`<text x="${x.toFixed(1)}" y="${(y-14*z).toFixed(1)}" text-anchor="middle" font-family="Barlow Condensed,Inter,sans-serif" font-weight="700" font-size="${(14.5*z).toFixed(1)}" fill="#fff" stroke="#000" stroke-width="${(3.4*z).toFixed(1)}" stroke-linejoin="round" paint-order="stroke">${a.t?esc(a.t.toUpperCase())+' · ':''}${M[1].toUpperCase()} · ${fmtKm(km)} · ${fmtDur(km/M[2])}</text>`}
   return h}
-function fireAll(delay=0){const now=performance.now();let i=0;for(const a of ANN)if(a.k==='missile')a.t0=now+delay+(i++)*350;kick(10)}
+const MISG=new THREE.Group();scene.add(MISG);const MISM=new WeakMap(),MISL=new Set();
+const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.22,'rgba(255,255,255,.85)');gr.addColorStop(.5,'rgba(255,255,255,.25)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+function misDrop(a){const m=MISM.get(a);if(!m)return;MISG.remove(m.g);m.g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose()});MISM.delete(a)}
+function misBuild(a){misDrop(a);const {A,B,w,H}=misH(a),pts=[];for(let i=0;i<=64;i++){const u=i/64,q=ll(slerpU(A,B,u));pts.push(P(q.lon,q.lat,1.004+Math.sin(Math.PI*u)*H))}
+  const curve=new THREE.CatmullRomCurve3(pts),col=new THREE.Color(a.c||'#ff3b30'),uni={uP:{value:0},uC:{value:col},uDone:{value:0}};
+  const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,160,.0014+Math.min(.0035,w*.002),6,false),new THREE.ShaderMaterial({uniforms:uni,transparent:true,depthWrite:false,
+    vertexShader:`varying float vU;void main(){vU=uv.x;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`uniform float uP;uniform vec3 uC;uniform float uDone;varying float vU;void main(){if(vU>uP)discard;float tr=smoothstep(uP-0.25,uP,vU)*(1.0-uDone);vec3 c=mix(uC*0.85,vec3(1.0,0.92,0.75),tr*0.75);gl_FragColor=vec4(c,mix(0.6,1.0,tr));}`}));
+  tube.renderOrder=6;
+  const sp=(c,b)=>new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:c,blending:b?THREE.AdditiveBlending:THREE.NormalBlending,transparent:true,depthWrite:false}));
+  const head=sp(col,true),core=sp(new THREE.Color('#ffffff'),false),flash=sp(new THREE.Color('#ff9a2a'),true),lflash=sp(new THREE.Color('#fff2c0'),true);
+  const nB=Nrm(a.b.lon,a.b.lat),pB=P(a.b.lon,a.b.lat,1.0045);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(.78,1,64),new THREE.MeshBasicMaterial({color:'#ffb020',transparent:true,depthWrite:false,side:THREE.DoubleSide}));ring.position.copy(pB);ring.lookAt(pB.clone().add(nB));
+  const mark=new THREE.Mesh(new THREE.RingGeometry(.45,1,40),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.95,depthWrite:false,side:THREE.DoubleSide}));mark.position.copy(pB);mark.lookAt(pB.clone().add(nB));
+  flash.position.copy(pB);lflash.position.copy(P(a.a.lon,a.a.lat,1.006));
+  for(const o of [head,core,flash,lflash,ring,mark])o.renderOrder=7;
+  const g=new THREE.Group();g.add(tube,head,core,flash,lflash,ring,mark);MISG.add(g);
+  const m={g,uni,curve,head,core,flash,lflash,ring,mark,v:view,mo:U.uMorph.value};MISM.set(a,m);return m}
+function misFrame(now){const live=new Set();let busy=false;
+  for(const a of ANN){if(a.k!=='missile')continue;live.add(a);let m=MISM.get(a);if(!m||m.v!==view||Math.abs(m.mo-U.uMorph.value)>.001)m=misBuild(a);
+    const D=misDur(a),t=a.t0?(now-a.t0)/D:2;if(t<0){m.g.visible=false;busy=true;continue}m.g.visible=true;
+    const e=t>=1?1:(t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2);m.uni.uP.value=t>=1?1.01:e;m.uni.uDone.value=t>=1?1:0;
+    if(t<1){const q=m.curve.getPointAt(e),dc=camera.position.distanceTo(q);m.head.position.copy(q);m.core.position.copy(q);m.head.scale.setScalar(dc*.05);m.core.scale.setScalar(dc*.014);m.head.visible=m.core.visible=true;busy=true}else m.head.visible=m.core.visible=false;
+    const lt=t*D/1000;m.lflash.visible=lt<.6;if(m.lflash.visible){m.lflash.scale.setScalar(camera.position.distanceTo(m.lflash.position)*.06*(1-lt/.6));busy=true}
+    const it=(t-1)*D/1000;if(t>=1&&it<1.8){const k=it/1.8,dc=camera.position.distanceTo(m.ring.position);m.ring.visible=m.flash.visible=true;m.ring.scale.setScalar(dc*(.012+k*.11));m.ring.material.opacity=1-k;m.flash.scale.setScalar(dc*(.04+.07*Math.sin(Math.min(1,k*2.5)*Math.PI/2)));m.flash.material.opacity=Math.max(0,1-k*1.5);busy=true}else m.ring.visible=m.flash.visible=false;
+    m.mark.visible=t>=1;if(m.mark.visible)m.mark.scale.setScalar(camera.position.distanceTo(m.mark.position)*.0075)}
+  for(const a of MISL)if(!live.has(a))misDrop(a);MISL.clear();for(const a of live)MISL.add(a);if(busy)misBusy=true}
+function misSalvo(o){const n=+$('missN').value||1,j=Math.max(.003,dist(o.a,o.b)*.035);for(let i=1;i<n;i++)ANN.push({...o,sv:1,b:{lon:o.b.lon+(Math.random()-.5)*j*2,lat:o.b.lat+(Math.random()-.5)*j},t0:o.t0+i*260});if($('missCam').checked)misCam(o)}
+function misCam(o){if(view!=='globe')return;const A=unit(o.a.lon,o.a.lat),B=unit(o.b.lon,o.b.lat),M=slerpU(A,B,.5).normalize(),w=A.angleTo(B),T=B.clone().sub(A).normalize(),S=new THREE.Vector3().crossVectors(M,T).normalize();if(S.y<0)S.negate();const tg=M.clone().multiplyScalar(.8),dd=Math.min(4.2,.9+w*1.75),dir=M.clone().multiplyScalar(Math.cos(.38)).sub(S.multiplyScalar(Math.sin(.38))).normalize();moveCam(tg.clone().add(dir.multiplyScalar(dd)),tg,900,.15)}
+function fireAll(delay=0){const now=performance.now();let i=0;const f0=ANN.find(a=>a.k==='missile');if(f0&&!delay&&$('missCam').checked){misCam(f0);delay=900}for(const a of ANN)if(a.k==='missile')a.t0=now+delay+(i++)*350;kick(10)}
 setTimeout(()=>{$('missType').onchange=e=>{missType=e.target.value;setTool('missile')};$('fireAll').onclick=()=>fireAll()});
 let annH='';
-function drawAnn(){misBusy=false;let h=ANN.map(a=>annHTML(a)).join('');if(FX.annDrag&&FX.annDrag.b)h+=annHTML({mt:missType,k:FX.annDrag.k,a:FX.annDrag.a,b:FX.annDrag.b,c:annCol,s:annSize,km:Math.round(dist(FX.annDrag.a,FX.annDrag.b)*6371/50)*50});h+=chokeHTML()+portsHTML()+confHTML();if(h!==annH){$('annl').innerHTML=h;annH=h}}
+function drawAnn(){misBusy=false;let h=ANN.map(a=>annHTML(a)).join('');if(FX.annDrag&&FX.annDrag.b)h+=annHTML({pv:1,mt:missType,k:FX.annDrag.k,a:FX.annDrag.a,b:FX.annDrag.b,c:annCol,s:annSize,km:Math.round(dist(FX.annDrag.a,FX.annDrag.b)*6371/50)*50});h+=chokeHTML()+portsHTML()+confHTML();if(h!==annH){$('annl').innerHTML=h;annH=h}}
 function renderAnnList(){$('annList').innerHTML=ANN.length?ANN.map((a,i)=>`<div class="anr"><i style="background:${a.c}"></i><span>${a.k==='arrow'?'Seta':a.k==='text'?'“'+esc(a.t)+'”':a.k==='ruler'?'Distância · '+fmtKm(dist(a.a,a.b)*6371):a.k==='ring'?'Raio':a.k==='missile'?'Míssil · '+MT[a.mt||'icbm'][1]:'Ícone'}</span>${a.k==='ring'?`<input class="km" type="number" min="10" step="50" data-km="${i}" value="${a.km}"><small>km</small>`:''}<button class="x" data-x="${i}" aria-label="Apagar">×</button></div>`).join(''):'<p class="empty">Nenhuma anotação ainda.</p>'}
 $('annList').oninput=e=>{const k=e.target.dataset.km;if(k!=null){ANN[+k].km=Math.max(1,+e.target.value||1);kick(3)}};
 $('annList').onclick=e=>{const b=e.target.closest('[data-x]');if(b){ANN.splice(+b.dataset.x,1);renderAnnList();kick(5)}};
@@ -2436,7 +2472,7 @@ renderScenes();
 
 /* ---------- adaptive quality ---------- */
 const QL={lv:0,ft:[],lock:false};
-function setQ(lv){QL.lv=lv;bloom.enabled=lv<1;DPR=lv>=3?.85:lv>=2?1:Math.min(devicePixelRatio,1.5);renderer.setPixelRatio(DPR);composer.setPixelRatio&&composer.setPixelRatio(DPR);composer.setSize(innerWidth,innerHeight);kick(5)}
+function setQ(lv){QL.lv=lv;bloom.enabled=lv<1&&bloom.strength>.45;const sm=lv>=2?0:4;for(const rt of [composer.renderTarget1,composer.renderTarget2])if(rt.samples!==sm){rt.samples=sm;rt.dispose()}DPR=lv>=3?.85:lv>=2?1:Math.min(devicePixelRatio,1.5);renderer.setPixelRatio(DPR);composer.setPixelRatio&&composer.setPixelRatio(DPR);composer.setSize(innerWidth,innerHeight);kick(5)}
 function qSample(dt){if(QL.lock||rec||snapReq||document.hidden)return;if(dt>200)return;QL.ft.push(dt);if(QL.ft.length<45)return;
   const a=QL.ft.slice().sort((x,y)=>x-y)[Math.floor(QL.ft.length*.6)];QL.ft.length=0;if(a>24&&QL.lv<3){setQ(QL.lv+1)}}
 if((navigator.hardwareConcurrency||8)<=4||innerWidth<700)setTimeout(()=>setQ(1));
@@ -2485,18 +2521,44 @@ const CONF=[
  {n:'Irã × EUA e Israel',k:0,p:[32.5,53.7],d:'Programa nuclear e risco de escalada.'},
  {n:'Mar do Sul da China',k:0,p:[12,114],d:'Disputas territoriais e marítimas.'},
  {n:'Venezuela × EUA',k:0,p:[7.5,-66],d:'Crise política e pressão militar dos EUA.'}];
+const CID=['ukr','sdn','gaza','lbn','mmr','sahel','cod','yem','som','hti','nga','pak','syr','eth','moz','kash','twn','kor','irn','scs','ven'];CONF.forEach((c,i)=>c.id=CID[i]);let CONFA=null;const CLIVE={t:0,src:'',err:false};
 const KC=['#f2c230','#ff8c2a','#ff4d2a','#e0001b'],KN=['Tensão','Conflito','Conflito','Guerra'];
 function regionsByA3(a3,names){const out=[];regions.forEach((r,k)=>{const c=countries[PRISTINE.own[k]];if(c&&c.a3===a3&&(names==='*'||names.includes(r.n)))out.push(r.id)});return out}
 function regionsByName(names){return regions.filter(r=>names.includes(r.n)).map(r=>r.id)}
 function confIds(c){if(c._ids)return c._ids;let ids=[];for(const a in c.a3||{})ids=ids.concat(regionsByA3(a,c.a3[a]));if(c.extra)ids=ids.concat(regionsByName(c.extra));return c._ids=ids}
-function setConf(on){confOn=on;$('tgConf').checked=on;if(!focusTex)return;for(let i=1;i<=N;i++)focusData[i*4+1]=0;if(on)for(const c of CONF)for(const id of confIds(c))focusData[id*4+1]=c.k>=3?255:180;focusTex.needsUpdate=true;$('confList').hidden=!on;kick(40)}
+function setConf(on){confOn=on;$('tgConf').checked=on;if(on&&!CLIVE.t&&!CLIVE.busy)confLive();if(!focusTex)return;for(let i=1;i<=N;i++)focusData[i*4+1]=0;if(on)for(const c of (CONFA||CONF))if(c.k>0)for(const id of confIds(c))focusData[id*4+1]=c.k>=3?255:c.k>=2?180:110;focusTex.needsUpdate=true;$('confList').hidden=!on;kick(40)}
 function confHTML(){if(!confOn)return'';let h='';const z=camera.position.distanceTo(controls.target),lab=z<(view==='globe'?4.6:3.6);const pl=[];
-  for(const c of CONF){const s=screenOf(c.p[1]*D2R,c.p[0]*D2R);if(!s.ok||s.face<.08)continue;const col=KC[c.k];
+  for(const c of (CONFA||CONF)){const s=screenOf(c.p[1]*D2R,c.p[0]*D2R);if(!s.ok||s.face<.08)continue;const col=KC[c.k];
     h+=`<g transform="translate(${s.x.toFixed(1)},${s.y.toFixed(1)})"><circle r="7" fill="${col}" opacity=".35"><animate attributeName="r" values="7;17;7" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".45;0;.45" dur="2.4s" repeatCount="indefinite"/></circle><circle r="6" fill="${col}" stroke="#000" stroke-width="1.5"/><path d="M-2.6-2.6l5.2 5.2M2.6-2.6l-5.2 5.2" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>`;
     if(lab){const w=c.n.length*6.8+16,b=[s.x+9,s.y-9,s.x+9+w,s.y+8];if(!pl.some(q=>b[0]<q[2]&&b[2]>q[0]&&b[1]<q[3]&&b[3]>q[1])){pl.push(b);h+=`<text x="11" y="4.5" font-family="Barlow Condensed,Inter,sans-serif" font-weight="700" font-size="13.5" fill="${col}" stroke="#000" stroke-width="3.4" stroke-linejoin="round" paint-order="stroke">${esc(c.n.toUpperCase())}</text>`}}
     h+=`<title>${esc(c.n)}: ${esc(c.d)}</title></g>`}return h}
-function renderConfList(){$('confList').innerHTML=`<p class="help" style="margin:6px 0">Situação aproximada em nov/2026. Conflitos mudam rápido: confira antes de apresentar.</p>`+CONF.map((c,i)=>`<button class="cfr" data-cf="${i}"><i style="background:${KC[c.k]}"></i><span><b>${esc(c.n)}</b><small>${KN[c.k]} · ${esc(c.d)}</small></span></button>`).join('')}
-$('confList').onclick=e=>{const b=e.target.closest('[data-cf]');if(!b)return;const c=CONF[+b.dataset.cf];flyTo(c.p[1]*D2R,c.p[0]*D2R,view==='globe'?1.75:1.2)};
+function renderConfList(){const L=CONFA||CONF,ago=CLIVE.t?Math.max(1,Math.round((Date.now()-CLIVE.t)/60000)):0;$('confList').innerHTML=`<div class="cfh"><span>${CLIVE.t&&!CLIVE.err?`Fonte: Wikipédia (lista de conflitos em curso) · atualizado há ${ago<60?ago+' min':Math.round(ago/60)+' h'}`:CLIVE.err?'Sem acesso à fonte ao vivo agora: mostrando a lista salva (nov/2026).':'Buscando dados ao vivo…'}</span><button class="mini" id="confRef">Atualizar</button></div>`+L.map((c,i)=>`<div class="cfr" data-cf="${i}"><i style="background:${KC[c.k]}"></i><span><b>${esc(c.n)}</b><small>${KN[c.k]} · ${esc(c.d)}</small><a href="https://news.google.com/search?q=${encodeURIComponent(c.q||c.n)}&hl=pt-BR&gl=BR&ceid=BR:pt-419" target="_blank" rel="noopener">Notícias de hoje ↗</a></span></div>`).join('');$('confRef').onclick=e=>{e.stopPropagation();confLive(true)}}
+$('confList').onclick=e=>{if(e.target.closest('a,button'))return;const b=e.target.closest('[data-cf]');if(!b)return;const c=(CONFA||CONF)[+b.dataset.cf];flyTo(c.p[1]*D2R,c.p[0]*D2R,view==='globe'?1.75:1.2)};
+
+/* live conflict list: parsed from Wikipedia's "List of ongoing armed conflicts" (updated by editors continuously) */
+const CMAP=[[/ukrain|russo/i,['ukr']],[/sudan/i,['sdn']],[/israel|gaza|palestin/i,['gaza','lbn']],[/myanmar|burm/i,['mmr']],[/sahel|maghreb/i,['sahel']],[/congo|kivu/i,['cod']],[/somali/i,['som']],[/yemen/i,['yem']],[/haiti/i,['hti']],[/nigeria|boko/i,['nga']],[/pakistan|baloch/i,['pak']],[/syria/i,['syr']],[/ethiopia/i,['eth']],[/mozambique|cabo delgado/i,['moz']],[/kashmir/i,['kash']]];
+const CPT=[[/mexic/i,'Guerra do narcotráfico no México'],[/colombi/i,'Conflito armado na Colômbia'],[/ecuador/i,'Conflito no Equador'],[/afghan/i,'Conflitos no Afeganistão'],[/iran/i,'Insurgências no Irã'],[/cameroon/i,'Conflitos em Camarões'],[/central african/i,'Guerra civil na República Centro-Africana'],[/venezuel/i,'Conflito na Venezuela'],[/philippine|moro/i,'Insurgências nas Filipinas'],[/naxal|maoist|india/i,'Insurgências na Índia'],[/kurd|pkk/i,'Conflito curdo'],[/libya/i,'Conflito na Líbia'],[/iraq/i,'Insurgência no Iraque'],[/mali/i,'Guerra no Mali'],[/burundi/i,'Conflito no Burundi'],[/thai/i,'Insurgência no sul da Tailândia'],[/papua/i,'Conflito em Papua'],[/armen|azerbai/i,'Armênia × Azerbaijão'],[/kenya/i,'Conflitos no Quênia'],[/mozambi/i,'Insurgência em Moçambique']];
+const enA3=n=>ECON&&ECON.en?ECON.en[String(n).toLowerCase().trim()]:null;
+async function confLive(force){if(CLIVE.busy)return;CLIVE.busy=true;renderConfList();
+  try{let data=null;try{const c=JSON.parse(localStorage.getItem('atlasvivo.conf')||'null');if(c&&!force&&Date.now()-c.t<3*3600e3)data=c}catch(e){}
+    await loadEcon();
+    if(!data){const r=await fetch('https://en.wikipedia.org/w/api.php?action=parse&page=List_of_ongoing_armed_conflicts&prop=text&format=json&formatversion=2&origin=*');if(!r.ok)throw 0;const j=await r.json();
+      const doc=new DOMParser().parseFromString(j.parse.text,'text/html');let cat=0;const list=[];
+      for(const el of doc.querySelectorAll('h2,h3,table')){if(/^H/.test(el.tagName)){const t=el.textContent;cat=/major wars/i.test(t)?3:/minor wars/i.test(t)?2:/^\s*conflicts/i.test(t)?1:/skirmish/i.test(t)?0:cat;continue}
+        if(!el.classList.contains('wikitable')||!cat)continue;
+        for(const tr of el.querySelectorAll('tr')){const td=tr.querySelectorAll(':scope>td');if(td.length<4)continue;const loc=td[td.length-4],CONT=/^(africa|asia|europe|americas|north america|south america|oceania|middle east)$/i,cc=[...td].slice(0,td.length-4).reverse().find(x=>{const t=x.textContent.trim();return /[a-z]{3}/i.test(t)&&!CONT.test(t)})||td[0];
+          const a3=[...new Set([...loc.querySelectorAll('a[title]')].map(a=>enA3(a.getAttribute('title'))).filter(Boolean))];if(!a3.length)continue;
+          const nm=((cc.querySelector('a')||cc).textContent||'').trim().split('\n')[0].replace(/\[.*?\]/g,'').trim();if(nm)list.push({n:nm,k:cat,a3})}}
+      if(list.length<5)throw 0;data={t:Date.now(),list};try{localStorage.setItem('atlasvivo.conf',JSON.stringify(data))}catch(e){}}
+    const out=[],used=new Set();
+    for(const e of data.list){const m=CMAP.find(([re])=>re.test(e.n));
+      if(m){for(const id of m[1]){const c=CONF.find(x=>x.id===id);if(c&&!used.has(id)){used.add(id);out.push({...c,k:Math.max(1,id==='lbn'?Math.min(2,e.k):e.k),q:c.n})}}continue}
+      const main=e.a3[0],ci=byA3(main);if(ci==null||used.has(main))continue;used.add(main);const C=countries[ci],pt=(CPT.find(([re])=>re.test(e.n))||[])[1];
+      out.push({id:'w'+main,n:pt||e.n,q:pt||e.n,k:e.k,p:[C.lat/D2R,C.lon/D2R],a3:{[main]:'*'},d:e.a3.length>1?'Também envolve: '+e.a3.slice(1,5).map(a=>{const i=byA3(a);return i!=null?countries[i].n:a}).join(', '):''})}
+    for(const c of CONF)if(c.k===0)out.push(c);
+    out.sort((a,b)=>b.k-a.k);CONFA=out;CLIVE.t=data.t;CLIVE.err=false}
+  catch(err){CLIVE.err=true;CLIVE.t=Date.now()}
+  CLIVE.busy=false;renderConfList();if(confOn)setConf(true);kick(10)}
 renderConfList();
 /* economy choropleth (Natural Earth, 2019) */
 const ECOR=['#f1eef6','#bdc9e1','#74a9cf','#2b8cbe','#045a8d'];
@@ -2576,9 +2638,9 @@ $('hmX').onclick=()=>$('hm').classList.remove('on');$('scHist').onclick=()=>$('h
 
 /* ---------- guided tour ---------- */
 const TOURS=[
- ['#mapSec','Tipo de mapa','Comece escolhendo o mapa certo para a análise: político, físico (montanhas), hídrico, ferroviário, econômico, militar ou conflitos atuais. As camadas logo abaixo podem ser combinadas.'],
- ['#blocSec','Blocos e alianças','Um clique destaca OTAN, BRICS, OCX, ONU, OPEP e outros. Combine dois para mostrar rivalidades, como OTAN contra OTSC.',()=>{$('blocSec').open=true}],
- ['.rail','Ferramentas de análise','Setas de avanço (A), textos (T), raio de alcance em km (R), régua de distância (M) e simulação de míssil (X): arraste do ponto de lançamento até o alvo.'],
+ ['#mapSec','Tipo de mapa','Comece escolhendo o mapa certo para a análise: político, físico (montanhas), hídrico, ferroviário, econômico, militar ou conflitos atuais. As camadas logo abaixo podem ser combinadas.',()=>setITab('map')],
+ ['#blocSec','Blocos e alianças','Um clique destaca OTAN, BRICS, OCX, ONU, OPEP e outros. Combine dois para mostrar rivalidades, como OTAN contra OTSC.',()=>{setITab('map');$('blocSec').open=true}],
+ ['.rail','Ferramentas de análise','Setas de avanço (A), textos (T), raio de alcance em km (R), régua de distância (M) e simulação de míssil (X): arraste do ponto de lançamento até o alvo.',()=>setITab('draw')],
  ['#mPres','Aula','Na aba Aula você monta cenas como slides e apresenta em tela cheia, com caneta e laser.',()=>setMode('pres')],
  ['#scHist','Momentos históricos','Aulas prontas: Primeira e Segunda Guerra, Guerra Civil Americana, Guerra Fria, Guerra do Paraguai, Coreia e Ucrânia.'],
  ['#mStory','História animada','Para animar eventos (invasões, cercos, golpes, tratados com o nome que você quiser), use a aba História ou peça ao Assistente.',()=>setMode('explore')],
@@ -2593,6 +2655,58 @@ function tourShow(){const st=TOURS[TI];if(!st)return tourEnd();if(st[3])st[3]();
   cd.style.left=x+'px';cd.style.top=Math.max(10,y)+'px'},st[3]?350:60)}
 $('tourNext').onclick=()=>{TI++;if(TI>=TOURS.length)tourEnd();else tourShow()};$('tourPrev').onclick=()=>{TI=Math.max(0,TI-1);tourShow()};$('tourX').onclick=tourEnd;
 addEventListener('resize',()=>{if(TI>=0)tourShow()});
+
+/* ---------- HD tiles: real satellite imagery and sharp relief when zoomed in ---------- */
+const TSRC={sat:{u:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',max:18,min:4,attr:'Satélite © Esri, Maxar, Earthstar Geographics'},
+ hill:{u:'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',max:15,min:5,attr:'Relevo © Esri'}};
+const mkTL=(key,mode)=>({key,mode,src:TSRC[key],cache:new Map(),k:{value:0},cov:0,z:0,err:0});
+const TL={sat:mkTL('sat','base'),hill:mkTL('hill','mul')};let tLoads=0,tLast=0,tCam='',tRef=false,hillOn=true,tAttr='';const TQ=[],tUp=[];
+const TVS=COMMON+`uniform float uR;varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(proj(position.xy,uR),1.0);}`;
+const TFB=`uniform sampler2D uT;varying vec2 vUv;void main(){vec3 c=texture2D(uT,vUv).rgb;gl_FragColor=vec4(pow(c,vec3(2.2))*1.05,1.0);}`;
+const TFM=`uniform sampler2D uT;uniform float uA;varying vec2 vUv;void main(){float l=dot(texture2D(uT,vUv).rgb,vec3(0.333));vec3 c=mix(vec3(1.0),vec3(clamp(pow(l/0.74,1.6),0.3,1.3)),uA);gl_FragColor=vec4(c,1.0);}`;
+const tLat=(y,n)=>Math.atan(Math.sinh(Math.PI*(1-2*y/n)));
+function tileGeo(z,x,y){const n=1<<z,s=z<5?20:z<8?12:z<11?6:4,pos=[],uv=[],idx=[];
+  for(let j=0;j<=s;j++){const lat=tLat(y+j/s,n);for(let i=0;i<=s;i++){pos.push((x+i/s)/n*2*Math.PI-Math.PI,lat,0);uv.push(i/s,1-j/s)}}
+  for(let j=0;j<s;j++)for(let i=0;i<s;i++){const a=j*(s+1)+i,b=a+1,c=a+s+1,d=c+1;idx.push(a,c,b,b,c,d)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.boundingSphere=BS;return g}
+function tileGet(L,z,x,y){const k=z+'/'+x+'/'+y;let t=L.cache.get(k);if(!t){t={k,z,x,y,st:0,m:null,used:0};L.cache.set(k,t)}return t}
+function tPump(){while(tLoads<8&&TQ.length){const [L,t]=TQ.pop();if(!L.cache.has(t.k)||performance.now()-t.used>2500){t.st=0;continue}tLoads++;
+  const img=new Image();img.crossOrigin='anonymous';img.decoding='async';
+  img.onload=()=>{tLoads--;tUp.push([L,t,img]);kick(4);tPump()};img.onerror=()=>{tLoads--;t.st=3;L.err++;tPump()};
+  img.src=L.src.u.replace('{z}',t.z).replace('{y}',t.y).replace('{x}',t.x)}}
+function tileUploads(){let n=0;while(tUp.length&&n<3){const [L,t,img]=tUp.shift();n++;if(!L.cache.has(t.k))continue;
+  const tex=new THREE.Texture(img);tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());tex.minFilter=THREE.LinearMipmapLinearFilter;tex.generateMipmaps=true;tex.needsUpdate=true;
+  const mat=L.mode==='base'?new THREE.ShaderMaterial({uniforms:{...U,uT:{value:tex},uR:{value:1.0008+t.z*2e-6}},vertexShader:TVS,fragmentShader:TFB,side:THREE.DoubleSide})
+    :new THREE.ShaderMaterial({uniforms:{...U,uT:{value:tex},uR:{value:1.00175+t.z*2e-6},uA:L.k},vertexShader:TVS,fragmentShader:TFM,side:THREE.DoubleSide,transparent:true,depthWrite:false,blending:THREE.MultiplyBlending,premultipliedAlpha:true});
+  const m=new THREE.Mesh(tileGeo(t.z,t.x,t.y),mat);m.frustumCulled=false;m.renderOrder=L.mode==='base'?.5:1.5;m.visible=false;scene.add(m);t.m=m;t.tex=tex;t.st=2}
+  if(n){tRef=true;kick(3)}}
+function tileEvict(L){if(L.cache.size<=260)return;const arr=[...L.cache.values()].filter(t=>t.st!==1&&!(t.m&&t.m.visible)).sort((a,b)=>a.used-b.used);
+  for(const t of arr.slice(0,L.cache.size-200)){if(t.m){scene.remove(t.m);t.m.geometry.dispose();t.m.material.dispose();t.tex.dispose()}L.cache.delete(t.k)}}
+function viewZoom(){const cx=innerWidth/2,cy=innerHeight/2,a=geoAt(cx,cy),b=geoAt(cx+80,cy);if(!a||!b)return null;const r=dist(a,b)/80/DPR;if(!(r>0))return null;return{a,z:Math.log2(2*Math.PI*Math.cos(a.lat)/(256*r))}}
+function tileWant(L){return L===TL.sat?theme==='sat':hillOn&&theme!=='sat'&&$('tgRelief').checked}
+function tileLayer(L,vz){const hide=()=>{for(const t of L.cache.values())if(t.m)t.m.visible=false;L.cov=0};
+  if(!tileWant(L)||!vz)return hide();let z=Math.min(L.src.max,Math.ceil(vz.z-.3));if(z<L.src.min)return hide();
+  const pts=[];for(let gy=0;gy<=5;gy++)for(let gx=0;gx<=7;gx++){const g=geoAt(innerWidth*gx/7,innerHeight*gy/5);if(g)pts.push(g)}
+  let lo0=1e9,lo1=-1e9,la0=1e9,la1=-1e9;for(const q of pts){lo0=Math.min(lo0,q.lon);lo1=Math.max(lo1,q.lon);la0=Math.min(la0,q.lat);la1=Math.max(la1,q.lat)}
+  if(lo1-lo0>Math.PI){lo0=-Math.PI;lo1=Math.PI}const ML=85.05*D2R;la0=Math.max(-ML,la0);la1=Math.min(ML,la1);
+  let R;for(;;){const n=1<<z,tx=l=>Math.floor((l+Math.PI)/(2*Math.PI)*n),ty=l=>Math.floor((1-Math.log(Math.tan(l)+1/Math.cos(l))/Math.PI)/2*n);
+    R={x0:Math.max(0,tx(lo0)-1),x1:Math.min(n-1,tx(lo1)+1),y0:Math.max(0,ty(la1)-1),y1:Math.min(n-1,ty(la0)+1)};if((R.x1-R.x0+1)*(R.y1-R.y0+1)<=64||z<=L.src.min)break;z--}
+  const now=performance.now(),vis=new Set(),cx=(R.x0+R.x1)/2,cy=(R.y0+R.y1)/2,list=[];let have=0,need=0;
+  for(let y=R.y0;y<=R.y1;y++)for(let x=R.x0;x<=R.x1;x++)list.push([x,y]);list.sort((a,b)=>Math.hypot(b[0]-cx,b[1]-cy)-Math.hypot(a[0]-cx,a[1]-cy));
+  for(const [x,y] of list){need++;const t=tileGet(L,z,x,y);t.used=now;if(t.st===2){vis.add(t);have++;continue}if(t.st===0){t.st=1;TQ.push([L,t])}
+    let pz=z-1,px=x>>1,py=y>>1;while(pz>=1){const q=L.cache.get(pz+'/'+px+'/'+py);if(q&&q.st===2){vis.add(q);q.used=now;have++;break}pz--;px>>=1;py>>=1}}
+  tPump();for(const t of L.cache.values())if(t.m)t.m.visible=vis.has(t);L.cov=need?have/need:0;L.z=z;tileEvict(L)}
+function tileUpdate(now){const ch=camera.position.toArray().map(v=>v.toFixed(5)).join()+theme+view+(+$('tgRelief').checked);
+  if(ch===tCam&&!tRef)return;if(now-tLast<130){dirtyF=Math.max(dirtyF,2);return}tLast=now;tCam=ch;tRef=false;
+  const vz=viewZoom();tileLayer(TL.sat,vz);tileLayer(TL.hill,vz);
+  TL.sat.tk=vz&&TL.sat.cov>.5?Math.max(0,Math.min(1,(vz.z-3.6)*1.2)):0;TL.hill.tk=vz&&TL.hill.cov>.3?Math.max(0,Math.min(1,(vz.z-5)/1.6)):0;
+  const at=[TL.sat,TL.hill].filter(L=>L.cov>0).map(L=>L.src.attr).join(' · ');if(at!==tAttr){tAttr=at;$('attr').textContent=at;$('attr').hidden=!at}}
+function tileEase(){let b=false;if(landU){const d=(TL.sat.tk||0)-landU.uTileK.value;if(Math.abs(d)>.003){landU.uTileK.value+=d*.12;b=true}else landU.uTileK.value=TL.sat.tk||0}
+  const d2=(TL.hill.tk||0)-TL.hill.k.value;if(Math.abs(d2)>.003){TL.hill.k.value+=d2*.12;b=true}else TL.hill.k.value=TL.hill.tk||0;if(b)dirtyF=Math.max(dirtyF,2)}
+setTimeout(()=>{$('tgHD').onchange=e=>{hillOn=e.target.checked;tRef=true;kick(5)}});
+
+function setITab(t){$('insp').dataset.t=t;for(const b of $('itabs').children)b.setAttribute('aria-pressed',b.dataset.it===t);$('insp').scrollTop=0}
+$('itabs').onclick=e=>{const b=e.target.closest('[data-it]');if(b)setITab(b.dataset.it)};
 /* ---------- map styles ---------- */
 let themeAnim=null;
 const THUMB={phys:['#1d4f7a','#5f9cc6','#6f8a45','#a88a5a'],sat:['#06213a','#0d3a5e','#5a6b3a','#8a7a52'],mil:['#17211b','#22322a','#4b5236','#5a6040'],night:['#04121b','#0e3b4d','#2c3a40','#2c3a40'],polit:['#5f9cc4','#a8d2ea','#f2d8a7','#c9dfb0'],light:['#9ccfe3','#b7dcea','#f2efe9','#f2efe9'],parch:['#a9b9ae','#cfd2bb','#f1e3c0','#e6d3a8']};
@@ -2611,7 +2725,7 @@ function setStyle(name){
     oceanU.uGratK.value=gratOn?m(A.gratK,B.gratK):0;oceanU.uShade.value=m(A.shade,B.shade);LU.uShade.value=m(A.shade,B.shade);LU.uSelFill.value=m(A.selFill,B.selFill);
     LU.uPolit.value=m(A.polit,B.polit);LU.uTex.value=m(A.tex,B.tex);U.uGridL.value=m(A.gridL||0,B.gridL||0);U.uSat.value=m(A.sat||0,B.sat||0);U.uHyp.value=m(A.hyp||0,B.hyp||0);if(t>.5)U.uGratS.value=B.gratS||15;if(WATER){const ak=Object.keys(STY).find(k=>STY[k]===A);WATER.rc.value.copy(col(RIVC[ak]||'#6aa9d6')).lerp(col(RIVC[name]||'#6aa9d6'),e)}
     linesMaj.material.uniforms.uAlpha.value=m(A.majA,B.majA);for(const l of [linesMaj,linesMin])l.material.uniforms.uGlowK.value=m(A.glowK,B.glowK);
-    bloom.strength=m(A.bloom,B.bloom);stars.material.opacity=m(A.stars,B.stars);atmoU.uK.value=m(A.atmoK,B.atmoK)*(1-morph);
+    bloom.strength=m(A.bloom,B.bloom);bloom.enabled=QL.lv<1&&bloom.strength>.45;stars.material.opacity=m(A.stars,B.stars);atmoU.uK.value=m(A.atmoK,B.atmoK)*(1-morph);
     if(t>=1)themeAnim=null};
   for(const b of $('styles').children)b.setAttribute('aria-pressed',b.dataset.s===name);
   $('stStyle').textContent='Estilo: '+B.name;
@@ -2639,7 +2753,7 @@ renderer.setAnimationLoop(()=>{
   if(linesMin){const z=view==='flat'?(d-.3)/2.4:(d-1)/2.2;linesMin.material.uniforms.uAlpha.value=showMin?(level==='state'?.5:.3)*Math.max(level==='state'?.3:.06,Math.min(1,1.6-z))*STY[theme].minK:0}
   waterLOD(d);railLOD(d);if(HYDRO&&WATER){WATER.rk.value=10;WATER.ra.value=1}if(sunMode==='on'&&sunHour==null&&(frame&255)===0)setSun();
   if(landU&&Math.abs(FOCUS.t-landU.uFocK.value)>.002)labBusy=true;
-  if(land){if(RUN.on)stepRun(now);tick(dt,now/1000);hoverStep();updateLabels(dt);drawAnn();
+  if(land){if(RUN.on)stepRun(now);tick(dt,now/1000);hoverStep();updateLabels(dt);tileUploads();tileUpdate(now);tileEase();drawAnn();misFrame(now);
     if((frame++&15)===0){const zf=view==='flat'?3.1/Math.max(.3,d):3.25/Math.max(.05,d-1);$('stZoom').textContent='Zoom '+zf.toFixed(1)+'×'}}
   if(snapReq&&!snapReq.go){snapReq.go=1;renderer.setPixelRatio(Math.min(4,DPR*snapReq.scale));composer.setSize(innerWidth,innerHeight)}else if(snapReq&&snapReq.go){composer.render();doSnap()}
   composer.render();
