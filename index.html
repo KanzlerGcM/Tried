@@ -621,7 +621,7 @@ scene.background=new THREE.Color(TH.night.bg);
 const camera=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,.02,200);
 const controls=new OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true;controls.dampingFactor=.075;controls.enablePan=false;
-controls.minDistance=1.16;controls.maxDistance=9;controls.zoomSpeed=.9;
+controls.minDistance=1.0006;controls.maxDistance=9;controls.zoomSpeed=.9;
 controls.autoRotate=!reduce;controls.autoRotateSpeed=.35;
 
 const composer=new EffectComposer(renderer);composer.renderTarget1.samples=composer.renderTarget2.samples=((navigator.hardwareConcurrency||8)<=4||innerWidth<700)?0:4;
@@ -630,16 +630,16 @@ const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),TH.nig
 composer.addPass(bloom);composer.addPass(new OutputPass());
 
 /* ---------- shared GLSL ---------- */
-const U={uHyp:{value:0},uSat:{value:0},uSatTex:{value:null},uSun:{value:new THREE.Vector3(1,0,0)},uDN:{value:0},uRelief:{value:0},uTopo:{value:null},uNight:{value:null},uGridL:{value:0},uGratS:{value:15},uMorph:{value:0},uTime:{value:0},uState:{value:null},uPaint:{value:null},uLight:{value:new THREE.Vector3(-.55,.6,.85)}};
+const U={uLift:{value:1},uHyp:{value:0},uSat:{value:0},uSatTex:{value:null},uSun:{value:new THREE.Vector3(1,0,0)},uDN:{value:0},uRelief:{value:0},uTopo:{value:null},uNight:{value:null},uGridL:{value:0},uGratS:{value:15},uMorph:{value:0},uTime:{value:0},uState:{value:null},uPaint:{value:null},uLight:{value:new THREE.Vector3(-.55,.6,.85)}};
 const COMMON=`
-uniform float uMorph;uniform float uTime;uniform sampler2D uState;uniform sampler2D uPaint;uniform vec3 uLight;
+uniform float uMorph;uniform float uLift;uniform float uTime;uniform sampler2D uState;uniform sampler2D uPaint;uniform vec3 uLight;
 const float PI=3.14159265;
 vec3 sph(vec2 ll,float r){float c=cos(ll.y);return vec3(c*sin(ll.x),sin(ll.y),c*cos(ll.x))*r;}
 vec3 eqe(vec2 ll,float z){float th=asin(0.8660254*sin(ll.y));float t2=th*th,t6=t2*t2*t2;
  float x=3.4641016*ll.x*cos(th)/(3.0*(9.0*0.003796*t6*t2+7.0*0.000893*t6-3.0*0.081106*t2+1.340264));
  float y=th*(1.340264-0.081106*t2+t6*(0.000893+0.003796*t2));return vec3(x*0.62,y*0.62,z);}
 float mk(vec2 ll){float m=clamp(uMorph*1.6-abs(ll.x)/PI*0.6,0.0,1.0);return m*m*(3.0-2.0*m);}
-vec3 proj(vec2 ll,float r){return mix(sph(ll,r),eqe(ll,r-1.0),mk(ll));}
+vec3 proj(vec2 ll,float r){r=1.0+(r-1.0)*uLift;return mix(sph(ll,r),eqe(ll,r-1.0),mk(ll));}
 vec3 nrm(vec2 ll){return normalize(mix(sph(ll,1.0),vec3(0.0,0.0,1.0),mk(ll)));}
 uniform float uHyp;uniform float uSat;uniform sampler2D uSatTex;uniform vec3 uSun;uniform float uDN;uniform float uRelief;uniform sampler2D uTopo;uniform sampler2D uNight;uniform float uGridL;uniform float uGratS;
 vec2 llUV(vec2 ll){return vec2(ll.x/(2.0*PI)+0.5,0.5-ll.y/PI);}
@@ -714,7 +714,7 @@ function eqe(lon,lat){const th=Math.asin(.8660254*Math.sin(lat)),t2=th*th,t6=t2*
  const x=3.4641016*lon*Math.cos(th)/(3*(9*.003796*t6*t2+7*.000893*t6-3*.081106*t2+1.340264));
  const y=th*(1.340264-.081106*t2+t6*(.000893+.003796*t2));return new THREE.Vector3(x*.62,y*.62,0)}
 function mk(lon){let m=Math.min(1,Math.max(0,morph*1.6-Math.abs(lon)/Math.PI*.6));return m*m*(3-2*m)}
-function P(lon,lat,r=1.003){const c=Math.cos(lat),m=mk(lon);const s=new THREE.Vector3(c*Math.sin(lon)*r,Math.sin(lat)*r,c*Math.cos(lon)*r);return m?s.lerp(eqe(lon,lat).setZ(r-1),m):s}
+function P(lon,lat,r=1.003){r=1+(r-1)*U.uLift.value;const c=Math.cos(lat),m=mk(lon);const s=new THREE.Vector3(c*Math.sin(lon)*r,Math.sin(lat)*r,c*Math.cos(lon)*r);return m?s.lerp(eqe(lon,lat).setZ(r-1),m):s}
 function Nrm(lon,lat){const c=Math.cos(lat),m=mk(lon);return new THREE.Vector3(c*Math.sin(lon),Math.sin(lat),c*Math.cos(lon)).lerp(new THREE.Vector3(0,0,1),m).normalize()}
 const D2R=Math.PI/180;
 function screenOf(lon,lat){
@@ -1174,10 +1174,10 @@ function setView(v){
   if(v===view||morphAnim)return;controls.autoRotate=false;
   const from=morph,to=v==='flat'?1:0,t0=performance.now(),dur=reduce?10:1700;
   if(v==='flat'){moveCam(new THREE.Vector3(0,0,3.1/Math.min(1,camera.aspect*.85)),new THREE.Vector3(),dur*.9)}
-  else{view='globe';controls.enableRotate=true;controls.enablePan=false;controls.minDistance=1.16;moveCam(new THREE.Vector3(0,0,innerWidth/innerHeight<.8?7.2:4.25),new THREE.Vector3(),dur*.9)}
+  else{view='globe';controls.enableRotate=true;controls.enablePan=false;controls.minDistance=1.0006;moveCam(new THREE.Vector3(0,0,innerWidth/innerHeight<.8?7.2:4.25),new THREE.Vector3(),dur*.9)}
   morphAnim=now=>{const t=Math.min(1,(now-t0)/dur);morph=from+(to-from)*ease(t);U.uMorph.value=morph;
     atmoU.uK.value=TH[theme].atmoK*(1-morph);
-    if(t>=1){morphAnim=null;setTimeout(()=>setTool(tool));if(v==='flat'){view='flat';controls.enableRotate=false;controls.enablePan=true;controls.screenSpacePanning=true;controls.mouseButtons.LEFT=THREE.MOUSE.PAN;controls.touches.ONE=THREE.TOUCH.PAN;controls.minDistance=.3}else{controls.mouseButtons.LEFT=THREE.MOUSE.ROTATE;controls.touches.ONE=THREE.TOUCH.ROTATE}}};
+    if(t>=1){morphAnim=null;setTimeout(()=>setTool(tool));if(v==='flat'){view='flat';controls.enableRotate=false;controls.enablePan=true;controls.screenSpacePanning=true;controls.mouseButtons.LEFT=THREE.MOUSE.PAN;controls.touches.ONE=THREE.TOUCH.PAN;controls.minDistance=.0025}else{controls.mouseButtons.LEFT=THREE.MOUSE.ROTATE;controls.touches.ONE=THREE.TOUCH.ROTATE}}};
   if(v==='flat')view='flat-going';
   $('tView').setAttribute('aria-pressed',v==='flat');$('vG').setAttribute('aria-pressed',v!=='flat');$('vF').setAttribute('aria-pressed',v==='flat');$('tView').dataset.tip=v==='flat'?'Globo 3D':'Mapa plano';$('tView').textContent=v==='flat'?'3D':'2D';
 }
@@ -2660,6 +2660,7 @@ addEventListener('resize',()=>{if(TI>=0)tourShow()});
 const TSRC={sat:{u:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',max:18,min:4,attr:'Satélite © Esri, Maxar, Earthstar Geographics'},
  hill:{u:'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',max:15,min:5,attr:'Relevo © Esri'}};
 const mkTL=(key,mode)=>({key,mode,src:TSRC[key],cache:new Map(),k:{value:0},cov:0,z:0,err:0});
+TSRC.sat2={u:'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2020_3857/default/g/{z}/{y}/{x}.jpg',max:14,min:4,attr:'Sentinel-2 cloudless © EOX (dados Copernicus)'};
 const TL={sat:mkTL('sat','base'),hill:mkTL('hill','mul')};let tLoads=0,tLast=0,tCam='',tRef=false,hillOn=true,tAttr='';const TQ=[],tUp=[];
 const TVS=COMMON+`uniform float uR;varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(proj(position.xy,uR),1.0);}`;
 const TFB=`uniform sampler2D uT;varying vec2 vUv;void main(){vec3 c=texture2D(uT,vUv).rgb;gl_FragColor=vec4(pow(c,vec3(2.2))*1.05,1.0);}`;
@@ -2671,16 +2672,16 @@ function tileGeo(z,x,y){const n=1<<z,s=z<5?20:z<8?12:z<11?6:4,pos=[],uv=[],idx=[
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.boundingSphere=BS;return g}
 function tileGet(L,z,x,y){const k=z+'/'+x+'/'+y;let t=L.cache.get(k);if(!t){t={k,z,x,y,st:0,m:null,used:0};L.cache.set(k,t)}return t}
 function tPump(){while(tLoads<8&&TQ.length){const [L,t]=TQ.pop();if(!L.cache.has(t.k)||performance.now()-t.used>2500){t.st=0;continue}tLoads++;
-  const img=new Image();img.crossOrigin='anonymous';img.decoding='async';
-  img.onload=()=>{tLoads--;tUp.push([L,t,img]);kick(4);tPump()};img.onerror=()=>{tLoads--;t.st=3;L.err++;tPump()};
+  const img=new Image();img.crossOrigin='anonymous';let dn=false;const fin=()=>{if(dn)return false;dn=true;clearTimeout(to);tLoads--;return true};const to=setTimeout(()=>{if(fin()){t.st=0;tPump()}},9000);
+  img.onload=()=>{if(!fin())return;L.ok=1;tUp.push([L,t,img]);kick(4);tPump()};img.onerror=()=>{if(!fin())return;t.st=3;L.err++;if(L===TL.sat&&L.src!==TSRC.sat2&&L.err>6&&!L.ok){L.src=TSRC.sat2;for(const q of L.cache.values())if(q.st===3)q.st=0;tRef=true;kick(5)}tPump()};
   img.src=L.src.u.replace('{z}',t.z).replace('{y}',t.y).replace('{x}',t.x)}}
-function tileUploads(){let n=0;while(tUp.length&&n<3){const [L,t,img]=tUp.shift();n++;if(!L.cache.has(t.k))continue;
+function tileUploads(){let n=0;while(tUp.length&&n<6){const [L,t,img]=tUp.shift();n++;if(!L.cache.has(t.k))continue;
   const tex=new THREE.Texture(img);tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());tex.minFilter=THREE.LinearMipmapLinearFilter;tex.generateMipmaps=true;tex.needsUpdate=true;
   const mat=L.mode==='base'?new THREE.ShaderMaterial({uniforms:{...U,uT:{value:tex},uR:{value:1.0008+t.z*2e-6}},vertexShader:TVS,fragmentShader:TFB,side:THREE.DoubleSide})
     :new THREE.ShaderMaterial({uniforms:{...U,uT:{value:tex},uR:{value:1.00175+t.z*2e-6},uA:L.k},vertexShader:TVS,fragmentShader:TFM,side:THREE.DoubleSide,transparent:true,depthWrite:false,blending:THREE.MultiplyBlending,premultipliedAlpha:true});
   const m=new THREE.Mesh(tileGeo(t.z,t.x,t.y),mat);m.frustumCulled=false;m.renderOrder=L.mode==='base'?.5:1.5;m.visible=false;scene.add(m);t.m=m;t.tex=tex;t.st=2}
   if(n){tRef=true;kick(3)}}
-function tileEvict(L){if(L.cache.size<=260)return;const arr=[...L.cache.values()].filter(t=>t.st!==1&&!(t.m&&t.m.visible)).sort((a,b)=>a.used-b.used);
+function tileEvict(L){const now=performance.now();for(const t of L.cache.values())if((t.st===1||t.st===0||t.st===3)&&now-t.used>3000)L.cache.delete(t.k);if(L.cache.size<=260)return;const arr=[...L.cache.values()].filter(t=>t.st===2&&!(t.m&&t.m.visible)&&now-t.used>1500).sort((a,b)=>a.used-b.used);
   for(const t of arr.slice(0,L.cache.size-200)){if(t.m){scene.remove(t.m);t.m.geometry.dispose();t.m.material.dispose();t.tex.dispose()}L.cache.delete(t.k)}}
 function viewZoom(){const cx=innerWidth/2,cy=innerHeight/2,a=geoAt(cx,cy),b=geoAt(cx+80,cy);if(!a||!b)return null;const r=dist(a,b)/80/DPR;if(!(r>0))return null;return{a,z:Math.log2(2*Math.PI*Math.cos(a.lat)/(256*r))}}
 function tileWant(L){return L===TL.sat?theme==='sat':hillOn&&theme!=='sat'&&$('tgRelief').checked}
@@ -2742,11 +2743,13 @@ renderer.setAnimationLoop(()=>{
   U.uTime.value=reduce?0:now/1000;
   if(tween)tween(now);if(morphAnim)morphAnim(now);if(themeAnim)themeAnim(now);
   const d=camera.position.distanceTo(controls.target);
-  if(view!=='flat'){controls.rotateSpeed=Math.max(.06,Math.min(.75,(d-1)*.38))}else controls.panSpeed=1;
+  if(view!=='flat'){controls.rotateSpeed=Math.max(.0004,Math.min(.75,(d-1)*.38));controls.zoomSpeed=Math.max(1e-4,Math.log((1+(d-1)*.955)/d)/Math.log(.95));controls.autoRotateSpeed=.35*Math.min(1,(d-1)/1.5)}else{controls.panSpeed=1;controls.zoomSpeed=.9}
+  {const alt=view==='flat'?d:d-1,nr=Math.max(2e-5,Math.min(.02,alt*.25)),lf=Math.max(.004,Math.min(1,alt/(view==='flat'?.5:.2)));
+   if(Math.abs(camera.near-nr)>nr*.05){camera.near=nr;camera.far=Math.max(12,d*4);camera.updateProjectionMatrix()}if(Math.abs(U.uLift.value-lf)>lf*.02)U.uLift.value=lf}
   const moved=controls.update();
   if(landU){const ct=confOn?1:0,cd=ct-landU.uConf.value;if(Math.abs(cd)>.002){landU.uConf.value+=cd*.08;dirtyF=Math.max(dirtyF,2)}else landU.uConf.value=ct}
   if(landU){const fd=FOCUS.t-landU.uFocK.value;if(Math.abs(fd)>.002){landU.uFocK.value+=fd*.07;dirtyF=Math.max(dirtyF,2)}else landU.uFocK.value=FOCUS.t}
-  const busy=moved||tween||morphAnim||themeAnim||RUN.on||rec||snapReq||anim.size||needPick||labBusy||selN>0||frame<8||dirtyF>0||FX.annDrag||Media.on||thumbReq||misBusy;
+  const busy=moved||tween||morphAnim||themeAnim||RUN.on||rec||snapReq||anim.size||needPick||labBusy||selN>0||frame<8||dirtyF>0||FX.annDrag||Media.on||thumbReq||misBusy||tUp.length>0;
   if(dirtyF>0)dirtyF--;
   if(!busy){return}
   qSample(dt);
